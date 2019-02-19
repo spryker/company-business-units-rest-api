@@ -8,14 +8,14 @@
 namespace Spryker\Glue\CompanyBusinessUnitsRestApi\Plugin\CustomersRestApi;
 
 use Generated\Shared\Transfer\CustomerTransfer;
-use Spryker\Glue\CustomersRestApiExtension\Dependency\Plugin\CustomerSessionExpanderPluginInterface;
+use Spryker\Glue\CustomersRestApiExtension\Dependency\Plugin\CustomerExpanderPluginInterface;
 use Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface;
 use Spryker\Glue\Kernel\AbstractPlugin;
 
 /**
  * @method \Spryker\Glue\CompanyUsersRestApi\CompanyUsersRestApiFactory getFactory()
  */
-class CompanyBusinessUnitCustomerSessionExpanderPlugin extends AbstractPlugin implements CustomerSessionExpanderPluginInterface
+class CompanyBusinessUnitCustomerExpanderPlugin extends AbstractPlugin implements CustomerExpanderPluginInterface
 {
     /**
      * {@inheritdoc}
@@ -31,7 +31,7 @@ class CompanyBusinessUnitCustomerSessionExpanderPlugin extends AbstractPlugin im
     public function expand(CustomerTransfer $customerTransfer, RestRequestInterface $restRequest): CustomerTransfer
     {
         return $this->getFactory()
-            ->createCustomerSessionExpander()
+            ->createCustomerExpander()
             ->expand($customerTransfer, $restRequest);
     }
 }
