@@ -5,10 +5,9 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\Relationship;
+namespace Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\Expander;
 
 use Generated\Shared\Transfer\CompanyBusinessUnitTransfer;
-use Generated\Shared\Transfer\CompanyUserTransfer;
 use Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer;
 use Spryker\Glue\CompanyBusinessUnitsRestApi\CompanyBusinessUnitsRestApiConfig;
 use Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\Mapper\CompanyBusinessUnitMapperInterface;
@@ -16,7 +15,7 @@ use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface;
 use Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface;
 use Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface;
 
-class CompanyBusinessUnitResourceRelationshipExpander implements CompanyBusinessUnitResourceRelationshipExpanderInterface
+abstract class AbstractCompanyBusinessUnitResourceRelationshipExpander implements CompanyBusinessUnitResourceRelationshipExpanderInterface
 {
     /**
      * @var \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface
@@ -49,28 +48,25 @@ class CompanyBusinessUnitResourceRelationshipExpander implements CompanyBusiness
     public function addResourceRelationships(array $resources, RestRequestInterface $restRequest): array
     {
         foreach ($resources as $resource) {
-            /**
-             * @var \Generated\Shared\Transfer\CompanyUserTransfer|null $payload
-             */
-            $payload = $resource->getPayload();
-            if ($payload === null || !($payload instanceof CompanyUserTransfer)) {
+            $companyBusinessUnitTransfer = $this->findCompanyBusinessUnitTransferInPayload($resource);
+            if (!$companyBusinessUnitTransfer) {
                 continue;
             }
 
-            $companyBusinessUnitTransfer = $payload->getCompanyBusinessUnit();
-            if ($companyBusinessUnitTransfer === null) {
-                continue;
-            }
-
-            $companyBusinessUnitResource = $this->createCompanyBusinessUnitResource(
-                $companyBusinessUnitTransfer
+            $resource->addRelationship(
+                $this->createCompanyBusinessUnitResource($companyBusinessUnitTransfer)
             );
-
-            $resource->addRelationship($companyBusinessUnitResource);
         }
 
         return $resources;
     }
+
+    /**
+     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface $restResource
+     *
+     * @return \Generated\Shared\Transfer\CompanyBusinessUnitTransfer|null
+     */
+    abstract protected function findCompanyBusinessUnitTransferInPayload(RestResourceInterface $restResource): ?CompanyBusinessUnitTransfer;
 
     /**
      * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
