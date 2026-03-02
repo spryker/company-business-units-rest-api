@@ -35,11 +35,6 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
      */
     protected $companyBusinessUnitRestResponseBuilder;
 
-    /**
-     * @param \Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\Mapper\CompanyBusinessUnitMapperInterface $companyBusinessUnitMapperInterface
-     * @param \Spryker\Glue\CompanyBusinessUnitsRestApi\Dependency\Client\CompanyBusinessUnitsRestApiToCompanyBusinessUnitClientInterface $companyBusinessUnitClient
-     * @param \Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\RestResponseBuilder\CompanyBusinessUnitRestResponseBuilderInterface $companyBusinessUnitRestResponseBuilder
-     */
     public function __construct(
         CompanyBusinessUnitMapperInterface $companyBusinessUnitMapperInterface,
         CompanyBusinessUnitsRestApiToCompanyBusinessUnitClientInterface $companyBusinessUnitClient,
@@ -50,11 +45,6 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
         $this->companyBusinessUnitRestResponseBuilder = $companyBusinessUnitRestResponseBuilder;
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     public function getCurrentUserCompanyBusinessUnit(RestRequestInterface $restRequest): RestResponseInterface
     {
         if ($this->isResourceIdentifierCurrentUser($restRequest->getResource()->getId())) {
@@ -64,11 +54,6 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
         return $this->getCurrentUserCompanyBusinessUnitByUuid($restRequest);
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     protected function getCurrentUserCompanyBusinessUnits(RestRequestInterface $restRequest): RestResponseInterface
     {
         if (!$restRequest->getRestUser()->getIdCompany()) {
@@ -86,11 +71,6 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
         return $this->createCompanyBusinessUnitCollectionResponse($companyBusinessUnitCollection);
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     protected function getCurrentUserCompanyBusinessUnitByUuid(RestRequestInterface $restRequest): RestResponseInterface
     {
         $companyBusinessUnitResponseTransfer = $this->companyBusinessUnitClient->findCompanyBusinessUnitByUuid(
@@ -116,21 +96,11 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
         );
     }
 
-    /**
-     * @param string $resourceIdentifier
-     *
-     * @return bool
-     */
     protected function isResourceIdentifierCurrentUser(string $resourceIdentifier): bool
     {
         return $resourceIdentifier === CompanyBusinessUnitsRestApiConfig::COLLECTION_IDENTIFIER_CURRENT_USER;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitCollectionTransfer $companyBusinessUnitCollectionTransfer
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     protected function createCompanyBusinessUnitCollectionResponse(
         CompanyBusinessUnitCollectionTransfer $companyBusinessUnitCollectionTransfer
     ): RestResponseInterface {
@@ -152,12 +122,6 @@ class CompanyBusinessUnitReader implements CompanyBusinessUnitReaderInterface
             ->createCompanyBusinessUnitCollectionRestResponse($companyBusinessUnitRestResources);
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\Request\Data\RestRequestInterface $restRequest
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
-     *
-     * @return bool
-     */
     protected function isCurrentCompanyUserInCompany(
         RestRequestInterface $restRequest,
         CompanyBusinessUnitTransfer $companyBusinessUnitTransfer

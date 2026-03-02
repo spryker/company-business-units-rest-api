@@ -27,10 +27,6 @@ abstract class AbstractCompanyBusinessUnitResourceRelationshipExpander implement
      */
     protected $companyBusinessUnitMapper;
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface $restResourceBuilder
-     * @param \Spryker\Glue\CompanyBusinessUnitsRestApi\Processor\CompanyBusinessUnit\Mapper\CompanyBusinessUnitMapperInterface $companyBusinessUnitMapper
-     */
     public function __construct(
         RestResourceBuilderInterface $restResourceBuilder,
         CompanyBusinessUnitMapperInterface $companyBusinessUnitMapper
@@ -61,18 +57,8 @@ abstract class AbstractCompanyBusinessUnitResourceRelationshipExpander implement
         return $resources;
     }
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface $restResource
-     *
-     * @return \Generated\Shared\Transfer\CompanyBusinessUnitTransfer|null
-     */
     abstract protected function findCompanyBusinessUnitTransferInPayload(RestResourceInterface $restResource): ?CompanyBusinessUnitTransfer;
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface
-     */
     protected function createCompanyBusinessUnitResource(
         CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
     ): RestResourceInterface {

@@ -27,11 +27,6 @@ class CompanyBusinessUnitsRestApiToCompanyBusinessUnitClientBridge implements Co
         $this->companyBusinessUnitClient = $companyBusinessUnitClient;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitCriteriaFilterTransfer $companyBusinessUnitCriteriaFilterTransfer
-     *
-     * @return \Generated\Shared\Transfer\CompanyBusinessUnitCollectionTransfer
-     */
     public function getCompanyBusinessUnitCollection(
         CompanyBusinessUnitCriteriaFilterTransfer $companyBusinessUnitCriteriaFilterTransfer
     ): CompanyBusinessUnitCollectionTransfer {
@@ -39,11 +34,6 @@ class CompanyBusinessUnitsRestApiToCompanyBusinessUnitClientBridge implements Co
             ->getCompanyBusinessUnitCollection($companyBusinessUnitCriteriaFilterTransfer);
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
-     *
-     * @return \Generated\Shared\Transfer\CompanyBusinessUnitResponseTransfer
-     */
     public function findCompanyBusinessUnitByUuid(CompanyBusinessUnitTransfer $companyBusinessUnitTransfer): CompanyBusinessUnitResponseTransfer
     {
         return $this->companyBusinessUnitClient->findCompanyBusinessUnitByUuid($companyBusinessUnitTransfer);

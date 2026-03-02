@@ -25,12 +25,6 @@ class CompanyBusinessUnitMapper implements CompanyBusinessUnitMapperInterface
         $this->companyBusinessUnitMapperPlugins = $companyBusinessUnitMapperPlugins;
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
-     * @param \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer
-     *
-     * @return \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer
-     */
     public function mapCompanyBusinessUnitTransferToRestCompanyBusinessUnitAttributesTransfer(
         CompanyBusinessUnitTransfer $companyBusinessUnitTransfer,
         RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer
@@ -43,12 +37,6 @@ class CompanyBusinessUnitMapper implements CompanyBusinessUnitMapperInterface
         );
     }
 
-    /**
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer $companyBusinessUnitTransfer
-     * @param \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer
-     *
-     * @return \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer
-     */
     protected function executeCompanyBusinessUnitMapperPlugins(
         CompanyBusinessUnitTransfer $companyBusinessUnitTransfer,
         RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer

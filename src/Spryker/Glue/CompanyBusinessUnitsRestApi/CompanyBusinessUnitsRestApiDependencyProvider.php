@@ -26,11 +26,6 @@ class CompanyBusinessUnitsRestApiDependencyProvider extends AbstractBundleDepend
      */
     public const PLUGINS_COMPANY_BUSINESS_UNIT_MAPPER = 'PLUGINS_COMPANY_BUSINESS_UNIT_MAPPER';
 
-    /**
-     * @param \Spryker\Glue\Kernel\Container $container
-     *
-     * @return \Spryker\Glue\Kernel\Container
-     */
     public function provideDependencies(Container $container): Container
     {
         $container = parent::provideDependencies($container);
@@ -40,11 +35,6 @@ class CompanyBusinessUnitsRestApiDependencyProvider extends AbstractBundleDepend
         return $container;
     }
 
-    /**
-     * @param \Spryker\Glue\Kernel\Container $container
-     *
-     * @return \Spryker\Glue\Kernel\Container
-     */
     protected function addCompanyBusinessUnitClient(Container $container): Container
     {
         $container->set(static::CLIENT_COMPANY_BUSINESS_UNIT, function (Container $container) {
@@ -56,11 +46,6 @@ class CompanyBusinessUnitsRestApiDependencyProvider extends AbstractBundleDepend
         return $container;
     }
 
-    /**
-     * @param \Spryker\Glue\Kernel\Container $container
-     *
-     * @return \Spryker\Glue\Kernel\Container
-     */
     protected function addCompanyBusinessUnitMapperPlugins(Container $container): Container
     {
         $container->set(static::PLUGINS_COMPANY_BUSINESS_UNIT_MAPPER, function () {

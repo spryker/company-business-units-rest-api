@@ -23,21 +23,11 @@ class CompanyBusinessUnitRestResponseBuilder implements CompanyBusinessUnitRestR
      */
     protected $restResourceBuilder;
 
-    /**
-     * @param \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceBuilderInterface $restResourceBuilder
-     */
     public function __construct(RestResourceBuilderInterface $restResourceBuilder)
     {
         $this->restResourceBuilder = $restResourceBuilder;
     }
 
-    /**
-     * @param string $companyBusinessUnitUuid
-     * @param \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer|null $companyBusinessUnitTransfer
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     public function createCompanyBusinessUnitRestResponse(
         string $companyBusinessUnitUuid,
         RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer,
@@ -53,13 +43,6 @@ class CompanyBusinessUnitRestResponseBuilder implements CompanyBusinessUnitRestR
             ->addResource($companyBusinessUnitRestResource);
     }
 
-    /**
-     * @param string $companyBusinessUnitUuid
-     * @param \Generated\Shared\Transfer\RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer
-     * @param \Generated\Shared\Transfer\CompanyBusinessUnitTransfer|null $companyBusinessUnitTransfer
-     *
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResourceInterface
-     */
     public function createCompanyBusinessUnitRestResource(
         string $companyBusinessUnitUuid,
         RestCompanyBusinessUnitAttributesTransfer $restCompanyBusinessUnitAttributesTransfer,
@@ -96,9 +79,6 @@ class CompanyBusinessUnitRestResponseBuilder implements CompanyBusinessUnitRestR
         return $restResponse;
     }
 
-    /**
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     public function createCompanyBusinessUnitNotFoundError(): RestResponseInterface
     {
         $restErrorTransfer = (new RestErrorMessageTransfer())
@@ -109,9 +89,6 @@ class CompanyBusinessUnitRestResponseBuilder implements CompanyBusinessUnitRestR
         return $this->restResourceBuilder->createRestResponse()->addError($restErrorTransfer);
     }
 
-    /**
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     public function createResourceNotImplementedError(): RestResponseInterface
     {
         $restErrorMessageTransfer = (new RestErrorMessageTransfer())
@@ -123,9 +100,6 @@ class CompanyBusinessUnitRestResponseBuilder implements CompanyBusinessUnitRestR
             ->addError($restErrorMessageTransfer);
     }
 
-    /**
-     * @return \Spryker\Glue\GlueApplication\Rest\JsonApi\RestResponseInterface
-     */
     public function createCompanyUserNotSelectedError(): RestResponseInterface
     {
         $restErrorMessageTransfer = (new RestErrorMessageTransfer())
