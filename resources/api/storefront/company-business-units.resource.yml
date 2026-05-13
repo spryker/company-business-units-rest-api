@@ -1,0 +1,100 @@
+resource:
+    name: CompanyBusinessUnits
+    shortName: company-business-units
+    description: 'Company business unit information for authenticated company users'
+
+    provider: Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Provider\CompanyBusinessUnitsStorefrontProvider
+
+    paginationEnabled: false
+
+    security: "is_granted('ROLE_CUSTOMER')"
+
+    operations:
+        # BC: legacy `GET /company-business-units/{uuid}` returned a single-item envelope.
+        - type: Get
+          name: getCompanyBusinessUnitByUuid
+          uriTemplate: '/company-business-units/{uuid}'
+          description: 'Retrieve a specific company business unit by UUID. The business unit must belong to the authenticated company user.'
+          openapiContext:
+              responses:
+                  200:
+                      description: 'Company business unit returned.'
+                  401:
+                      description: 'Missing or invalid access token.'
+                  404:
+                      description: 'Business unit not found, or does not belong to the authenticated company user (code 1901).'
+
+    properties:
+        # `uuid` is the JSON:API resource id (`data.id`), not an attribute.
+        uuid:
+            type: string
+            identifier: true
+            writable: false
+            readable: false
+            required: false
+            description: 'Unique company business unit identifier'
+            openapiContext:
+                example: 'b331977d-39ce-502f-8043-89544251079f'
+
+        name:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'Business unit name'
+            openapiContext:
+                example: 'Sales Unit DE'
+
+        email:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'Business unit contact email'
+            openapiContext:
+                example: 'business-unit-de@example.com'
+
+        phone:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'Business unit contact phone'
+            openapiContext:
+                example: '+49 30 1234567'
+
+        externalUrl:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'External URL for the business unit'
+            openapiContext:
+                example: 'https://example.com/business-unit-de'
+
+        bic:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'Business Identifier Code (bank)'
+            openapiContext:
+                example: 'DEUTDEFF'
+
+        iban:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'International Bank Account Number'
+            openapiContext:
+                example: 'DE89370400440532013000'
+
+        defaultBillingAddress:
+            type: string
+            writable: false
+            readable: true
+            required: false
+            description: 'Default billing address identifier'
+            openapiContext:
+                example: '123'

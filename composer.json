@@ -17,10 +17,12 @@
         "spryker/uuid-behavior": "^1.0.0"
     },
     "require-dev": {
+        "spryker/api-platform": "^1.0.0",
         "spryker/code-sniffer": "*",
         "spryker/testify": "*"
     },
     "suggest": {
+        "spryker/api-platform": "Required when the API Platform want to be used",
         "spryker/auth-rest-api": "If you want to authorize and authenticate customers via access tokens."
     },
     "autoload": {
