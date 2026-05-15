@@ -12,77 +12,102 @@ namespace Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Provider;
 use Generated\Api\Storefront\CompanyBusinessUnitsStorefrontResource;
 use Generated\Shared\Transfer\CompanyBusinessUnitTransfer;
 use Spryker\ApiPlatform\State\Provider\AbstractStorefrontProvider;
-use Spryker\Client\CompanyBusinessUnit\CompanyBusinessUnitClientInterface;
 use Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Exception\CompanyBusinessUnitsExceptionFactory;
-use Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Mapper\CompanyBusinessUnitResourceMapper;
+use Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Mapper\CompanyBusinessUnitsResourceMapperInterface;
+use Spryker\Glue\CompanyBusinessUnitsRestApi\Api\Storefront\Reader\CompanyBusinessUnitReaderInterface;
+use Spryker\Service\Serializer\SerializerServiceInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * Partial API Platform migration: only `GET /company-business-units/{uuid}` is served from here.
- * Mutating operations and the collection endpoint remain on the legacy Glue REST stack.
- *
- * Ownership rule mirrors the legacy `CompanyBusinessUnitReader::isCurrentCompanyUserInCompany`:
- * the business unit must belong to the same `fkCompany` as the authenticated company user, else
- * the response is the legacy-equivalent 404 (a 403 would leak the existence of the resource).
- */
 class CompanyBusinessUnitsStorefrontProvider extends AbstractStorefrontProvider
 {
+    protected const string KEY_UUID = 'uuid';
+
+    protected const string OPERATION_NAME_GET_COMPANY_BUSINESS_UNITS_MINE = 'getCompanyBusinessUnitsMine';
+
     public function __construct(
-        protected CompanyBusinessUnitClientInterface $companyBusinessUnitClient,
-        protected CompanyBusinessUnitResourceMapper $companyBusinessUnitResourceMapper,
-        protected CompanyBusinessUnitsExceptionFactory $exceptionFactory,
+        protected CompanyBusinessUnitReaderInterface $companyBusinessUnitReader,
+        protected CompanyBusinessUnitsExceptionFactory $companyBusinessUnitsExceptionFactory,
+        protected CompanyBusinessUnitsResourceMapperInterface $companyBusinessUnitsResourceMapper,
+        protected SerializerServiceInterface $serializer,
     ) {
+    }
+
+    protected function provideItem(): ?object
+    {
+        if (!$this->hasCustomer()) {
+            throw new AccessDeniedException();
+        }
+
+        return $this->provideCompanyBusinessUnitByUuid(
+            (string)$this->getUriVariable(static::KEY_UUID),
+        );
+    }
+
+    protected function provideCollection(): array
+    {
+        if ($this->getOperation()->getName() !== static::OPERATION_NAME_GET_COMPANY_BUSINESS_UNITS_MINE) {
+            throw $this->companyBusinessUnitsExceptionFactory->createResourceNotImplementedException();
+        }
+
+        if (!$this->hasCustomer()) {
+            throw new AccessDeniedException();
+        }
+
+        return $this->provideCurrentUserCompanyBusinessUnits();
     }
 
     /**
      * @throws \Spryker\ApiPlatform\Exception\GlueApiException
+     *
+     * @return array<\Generated\Api\Storefront\CompanyBusinessUnitsStorefrontResource>
      */
-    protected function provideItem(): ?object
+    protected function provideCurrentUserCompanyBusinessUnits(): array
     {
-        $uuid = $this->getUriVariables()['uuid'] ?? null;
+        $idCompanyUser = $this->getCustomer()->getCompanyUserTransfer()?->getIdCompanyUser();
 
-        if ($uuid === null || $uuid === '') {
-            throw $this->exceptionFactory->createCompanyBusinessUnitNotFoundException();
+        if ($idCompanyUser === null) {
+            throw $this->companyBusinessUnitsExceptionFactory->createCompanyUserNotSelectedException();
         }
 
-        $companyBusinessUnitResponseTransfer = $this->companyBusinessUnitClient->findCompanyBusinessUnitByUuid(
-            (new CompanyBusinessUnitTransfer())->setUuid($uuid),
-        );
+        $companyBusinessUnitCollectionTransfer = $this->companyBusinessUnitReader
+            ->getCompanyBusinessUnitCollectionByCompanyUserId($idCompanyUser);
 
-        if (!$companyBusinessUnitResponseTransfer->getIsSuccessful()) {
-            throw $this->exceptionFactory->createCompanyBusinessUnitNotFoundException();
+        if ($companyBusinessUnitCollectionTransfer->getCompanyBusinessUnits()->count() === 0) {
+            throw $this->companyBusinessUnitsExceptionFactory->createCompanyBusinessUnitNotFoundException();
         }
 
-        $companyBusinessUnitTransfer = $companyBusinessUnitResponseTransfer->getCompanyBusinessUnitTransferOrFail();
+        $resources = [];
 
-        if (!$this->isAuthenticatedCustomerInSameCompany($companyBusinessUnitTransfer)) {
-            throw $this->exceptionFactory->createCompanyBusinessUnitNotFoundException();
+        foreach ($companyBusinessUnitCollectionTransfer->getCompanyBusinessUnits() as $companyBusinessUnitTransfer) {
+            $resources[] = $this->denormalizeToResource($companyBusinessUnitTransfer);
         }
 
-        return CompanyBusinessUnitsStorefrontResource::fromArray(
-            $this->companyBusinessUnitResourceMapper->mapCompanyBusinessUnitTransferToResourceData($companyBusinessUnitTransfer),
-        );
+        return $resources;
     }
 
-    /**
-     * Ownership check — only members of the same company can read a business unit. Customer is
-     * known to be present at this point (resource is `ROLE_CUSTOMER`-gated), but the
-     * `CompanyUserTransfer` is optional: a logged-in customer who is not a company user is
-     * treated the same as a stranger to the company → 404.
-     */
-    protected function isAuthenticatedCustomerInSameCompany(CompanyBusinessUnitTransfer $companyBusinessUnitTransfer): bool
+    protected function provideCompanyBusinessUnitByUuid(string $uuid): CompanyBusinessUnitsStorefrontResource
     {
-        if (!$this->hasCustomer()) {
-            return false;
+        $companyBusinessUnitTransfer = $this->companyBusinessUnitReader->findCompanyBusinessUnitByUuid($uuid);
+
+        if ($companyBusinessUnitTransfer === null) {
+            throw $this->companyBusinessUnitsExceptionFactory->createCompanyBusinessUnitNotFoundException();
         }
 
-        $companyUserTransfer = $this->getCustomer()->getCompanyUserTransfer();
+        $idCurrentCompany = $this->getCustomer()->getCompanyUserTransfer()?->getFkCompany();
 
-        if ($companyUserTransfer === null) {
-            return false;
+        if ($idCurrentCompany === null || $idCurrentCompany !== $companyBusinessUnitTransfer->getFkCompany()) {
+            throw $this->companyBusinessUnitsExceptionFactory->createCompanyBusinessUnitNotFoundException();
         }
 
-        $idCompany = $companyUserTransfer->getFkCompany();
+        return $this->denormalizeToResource($companyBusinessUnitTransfer);
+    }
 
-        return $idCompany !== null && $idCompany === $companyBusinessUnitTransfer->getFkCompany();
+    protected function denormalizeToResource(
+        CompanyBusinessUnitTransfer $companyBusinessUnitTransfer,
+    ): CompanyBusinessUnitsStorefrontResource {
+        return $this->serializer->denormalize(
+            $this->companyBusinessUnitsResourceMapper->mapCompanyBusinessUnitTransferToResourceData($companyBusinessUnitTransfer),
+            CompanyBusinessUnitsStorefrontResource::class,
+        );
     }
 }

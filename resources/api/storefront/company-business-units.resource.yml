@@ -7,10 +7,19 @@ resource:
 
     paginationEnabled: false
 
-    security: "is_granted('ROLE_CUSTOMER')"
+    security: "is_granted('ROLE_CUSTOMER') or is_granted('ROLE_COMPANY_USER')"
 
     operations:
-        # BC: legacy `GET /company-business-units/{uuid}` returned a single-item envelope.
+        # BC: legacy `GET /company-business-units/mine` returned a JSON:API collection envelope
+        # `{data: [{...}]}`. Declared BEFORE `/company-business-units/{uuid}` so the literal
+        # route wins over the parameterised one when matching `/company-business-units/mine`.
+        - type: GetCollection
+          name: getCompanyBusinessUnitsMine
+          uriTemplate: '/company-business-units/mine'
+          description: 'Retrieve company business units for the currently authenticated company user.'
+
+        # BC: legacy `GET /company-business-units/{uuid}` returned a single-item envelope
+        # `{data: {...}}`, so this is `Get` (not `GetCollection`).
         - type: Get
           name: getCompanyBusinessUnitByUuid
           uriTemplate: '/company-business-units/{uuid}'
@@ -24,8 +33,26 @@ resource:
                   404:
                       description: 'Business unit not found, or does not belong to the authenticated company user (code 1901).'
 
+        # BC: legacy `GET /company-business-units` (no id) returned 501 Not Implemented.
+        - type: GetCollection
+          name: getCompanyBusinessUnitsFallback
+          uriTemplate: '/company-business-units'
+          description: 'Returns 501 (endpoint not implemented).'
+
+    includes:
+        - relationshipName: companies
+          targetResource: Companies
+          resolverClass: Spryker\Glue\CompaniesRestApi\Api\Storefront\Relationship\CompaniesRelationshipResolver
+
+        - relationshipName: company-business-unit-addresses
+          targetResource: CompanyBusinessUnitAddresses
+          resolverClass: Spryker\Glue\CompanyBusinessUnitAddressesRestApi\Api\Storefront\Relationship\CompanyBusinessUnitAddressesRelationshipResolver
+
     properties:
         # `uuid` is the JSON:API resource id (`data.id`), not an attribute.
+        # BC: `uuid` is the JSON:API resource id (`data.id`), not an attribute.
+        # `identifier: true` populates `data.id`; `readable: false` keeps it out of
+        # the `attributes` block, matching the legacy response shape.
         uuid:
             type: string
             identifier: true
@@ -98,3 +125,15 @@ resource:
             description: 'Default billing address identifier'
             openapiContext:
                 example: '123'
+
+        idCompany:
+            type: integer
+            writable: false
+            readable: false
+            description: 'Internal FK used by relationship resolvers; not part of the public attribute set.'
+
+        idCompanyBusinessUnit:
+            type: integer
+            writable: false
+            readable: false
+            description: 'Internal id used by relationship resolvers; not part of the public attribute set.'
