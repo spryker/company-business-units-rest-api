@@ -12,16 +12,22 @@ use Spryker\Glue\Kernel\AbstractBundleConfig;
 class CompanyBusinessUnitsRestApiConfig extends AbstractBundleConfig
 {
     /**
+     * @api
+     *
      * @var string
      */
     public const RESOURCE_COMPANY_BUSINESS_UNITS = 'company-business-units';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const CONTROLLER_RESOURCE_COMPANY_BUSINESS_UNITS = 'company-business-units-resource';
 
     /**
+     * @api
+     *
      * @deprecated Will be removed with next major release.
      *
      * @var string
@@ -29,31 +35,43 @@ class CompanyBusinessUnitsRestApiConfig extends AbstractBundleConfig
     public const ACTION_COMPANY_BUSINESS_UNITS_GET = 'get';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const RESPONSE_CODE_COMPANY_BUSINESS_UNIT_NOT_FOUND = '1901';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const RESPONSE_DETAIL_COMPANY_BUSINESS_UNIT_NOT_FOUND = 'Company business unit not found.';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const RESPONSE_CODE_COMPANY_USER_NOT_SELECTED = '1903';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const RESPONSE_DETAIL_COMPANY_USER_NOT_SELECTED = 'Current company user is not set. You need to select the current company user with /company-user-access-tokens in order to access the resource collection.';
 
     /**
+     * @api
+     *
      * @var string
      */
     public const RESPONSE_DETAIL_RESOURCE_NOT_IMPLEMENTED = 'Endpoint is not implemented.';
 
     /**
+     * @api
+     *
      * @uses \Spryker\Glue\GlueApplication\GlueApplicationConfig::COLLECTION_IDENTIFIER_CURRENT_USER
      *
      * @var string
