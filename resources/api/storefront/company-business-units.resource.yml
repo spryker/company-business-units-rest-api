@@ -17,6 +17,16 @@ resource:
           name: getCompanyBusinessUnitsMine
           uriTemplate: '/company-business-units/mine'
           description: 'Retrieve company business units for the currently authenticated company user.'
+          openapiContext:
+              responses:
+                  200:
+                      description: 'Business units of the authenticated company user returned.'
+                  401:
+                      description: 'Invalid access token.'
+                  403:
+                      description: 'Access denied: missing access token, or no active company user session (code 1903).'
+                  404:
+                      description: 'The authenticated company user is assigned to no business unit (code 1901).'
 
         # BC: legacy `GET /company-business-units/{uuid}` returned a single-item envelope
         # `{data: {...}}`, so this is `Get` (not `GetCollection`).
@@ -29,7 +39,9 @@ resource:
                   200:
                       description: 'Company business unit returned.'
                   401:
-                      description: 'Missing or invalid access token.'
+                      description: 'Invalid access token.'
+                  403:
+                      description: 'Access denied: missing access token or insufficient scope.'
                   404:
                       description: 'Business unit not found, or does not belong to the authenticated company user (code 1901).'
 
@@ -38,6 +50,15 @@ resource:
           name: getCompanyBusinessUnitsFallback
           uriTemplate: '/company-business-units'
           description: 'Returns 501 (endpoint not implemented).'
+          # No success response: the endpoint exists only to keep the legacy 501 contract.
+          openapiContext:
+              responses:
+                  401:
+                      description: 'Invalid access token.'
+                  403:
+                      description: 'Access denied: missing access token or insufficient scope.'
+                  501:
+                      description: 'Endpoint is not implemented.'
 
     includes:
         - relationshipName: companies
@@ -49,10 +70,6 @@ resource:
           resolverClass: Spryker\Glue\CompanyBusinessUnitAddressesRestApi\Api\Storefront\Relationship\CompanyBusinessUnitAddressesRelationshipResolver
 
     properties:
-        # `uuid` is the JSON:API resource id (`data.id`), not an attribute.
-        # BC: `uuid` is the JSON:API resource id (`data.id`), not an attribute.
-        # `identifier: true` populates `data.id`; `readable: false` keeps it out of
-        # the `attributes` block, matching the legacy response shape.
         uuid:
             type: string
             identifier: true
