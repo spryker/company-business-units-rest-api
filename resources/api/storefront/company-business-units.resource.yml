@@ -31,6 +31,9 @@ resource:
         # BC: legacy `GET /company-business-units/{uuid}` returned a single-item envelope
         # `{data: {...}}`, so this is `Get` (not `GetCollection`).
         - type: Get
+          extraProperties:
+              notFoundCode: '1901'
+              notFoundMessage: 'Company business unit not found.'
           name: getCompanyBusinessUnitByUuid
           uriTemplate: '/company-business-units/{uuid}'
           description: 'Retrieve a specific company business unit by UUID. The business unit must belong to the authenticated company user.'
